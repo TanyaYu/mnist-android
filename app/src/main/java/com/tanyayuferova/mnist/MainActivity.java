@@ -1,70 +1,129 @@
 package com.tanyayuferova.mnist;
 
-import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.byox.drawview.views.DrawView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.i18n.phonenumbers.AsYouTypeFormatter;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+
+import static com.byox.drawview.enums.DrawingCapture.BITMAP;
 
 public class MainActivity extends AppCompatActivity {
 
     private DrawView drawView;
-    private FloatingActionButton predictButton;
-    private MnistModel model = new MnistModel();
+    private TextView phoneNumberView;
+    private TextView guess1;
+    private TextView guess2;
+    private TextView guess3;
+    private Toolbar toolbar;
+    private LinearLayout guessesContainer;
+    private MnistClassifier model;
+
+    private PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+    private AsYouTypeFormatter formatter = phoneUtil.getAsYouTypeFormatter("US");
+    private String phoneNumber = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        drawView = findViewById(R.id.draw_view);
-        predictButton = findViewById(R.id.predict_btn);
+        model = new MnistClassifier(this);
 
-        predictButton.setOnClickListener(new View.OnClickListener() {
+        phoneNumberView = findViewById(R.id.phone_number_view);
+        guessesContainer = findViewById(R.id.guess_container);
+        toolbar = findViewById(R.id.toolbar);
+        guess1 = findViewById(R.id.guess_1);
+        guess2 = findViewById(R.id.guess_2);
+        guess3 = findViewById(R.id.guess_3);
+        toolbar = findViewById(R.id.toolbar);
+        drawView = findViewById(R.id.draw_view);
+
+        drawView.setOnDrawViewListener(new EmptyOnDrawViewListener() {
             @Override
-            public void onClick(View view) {
-                onPredictClick();
+            public void onEndDrawing() {
+                classifyDrawing();
             }
         });
+        View.OnClickListener digitListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                replaceLastDigit(((TextView) view).getText().toString());
+            }
+        };
+        guess1.setOnClickListener(digitListener);
+        guess2.setOnClickListener(digitListener);
+        guess3.setOnClickListener(digitListener);
+        model.initialize();
+
+        toolbar.inflateMenu(R.menu.main);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_clear:
+                        clear();
+                        return true;
+                    default:
+                        // If we got here, the user's action was not recognized.
+                        // Invoke the superclass to handle it.
+                        return false;
+                }
+            }
+        });
+        clear();
     }
 
-    private void onPredictClick() {
-        // todo get picture from drawView
-        // todo predict the number
-        String answer = model.predict();
-        showPredictionDialog(answer);
+    private void classifyDrawing() {
+        Bitmap bitmap = (Bitmap) drawView.createCapture(BITMAP)[0];
+        String[] prediction = model.classify(bitmap);
+        phoneNumber += prediction[0];
+        guess1.setText(prediction[1]);
+        guess2.setText(prediction[2]);
+        guess3.setText(prediction[3]);
+        updatePhoneNumber();
         drawView.restartDrawing();
+        guessesContainer.setVisibility(View.VISIBLE);
     }
 
-    private void showPredictionDialog(String prediction) {
-        new AlertDialog.Builder(this)
-            .setMessage(prediction)
-            .setTitle(R.string.prediction_dialog_title)
-            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    onPredictRightClick();
-                }
-            })
-            .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    onPredictWrongClick();
-                }
-            })
-            .create()
-            .show();
+    private void clear() {
+        phoneNumber = "";
+        updatePhoneNumber();
+        phoneNumberView.setText("Please draw a digit");
+        guessesContainer.setVisibility(View.INVISIBLE);
     }
 
-    private void onPredictRightClick() {
-
+    private void onBackSpaceClick() {
+        phoneNumber = phoneNumber.substring(0, phoneNumber.length() - 1);
+        updatePhoneNumber();
     }
 
-    private void onPredictWrongClick() {
+    private void replaceLastDigit(String newDigit) {
+        phoneNumber = phoneNumber.substring(0, phoneNumber.length() - 1);
+        phoneNumber += newDigit;
+        updatePhoneNumber();
+    }
 
+    private void updatePhoneNumber() {
+        formatter.clear();
+        String formatted = "";
+        for (char c : phoneNumber.toCharArray()) {
+            formatted = formatter.inputDigit(c);
+        }
+        phoneNumberView.setText(formatted);
+    }
+
+    @Override
+    protected void onDestroy() {
+        model.close();
+        super.onDestroy();
     }
 }
