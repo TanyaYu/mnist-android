@@ -24,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView guess2;
     private TextView guess3;
     private Toolbar toolbar;
-    private LinearLayout guessesContainer;
     private MnistClassifier model;
 
     private PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
@@ -39,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
         model = new MnistClassifier(this);
 
         phoneNumberView = findViewById(R.id.phone_number_view);
-        guessesContainer = findViewById(R.id.guess_container);
         toolbar = findViewById(R.id.toolbar);
         guess1 = findViewById(R.id.guess_1);
         guess2 = findViewById(R.id.guess_2);
@@ -91,14 +89,15 @@ public class MainActivity extends AppCompatActivity {
         guess3.setText(prediction[3]);
         updatePhoneNumber();
         drawView.restartDrawing();
-        guessesContainer.setVisibility(View.VISIBLE);
     }
 
     private void clear() {
         phoneNumber = "";
         updatePhoneNumber();
-        phoneNumberView.setText("Please draw a digit");
-        guessesContainer.setVisibility(View.INVISIBLE);
+        phoneNumberView.setText("Draw a digit");
+        guess1.setText("");
+        guess2.setText("");
+        guess3.setText("");
     }
 
     private void onBackSpaceClick() {

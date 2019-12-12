@@ -74,6 +74,7 @@ class MnistClassifier {
     }
 
     public String[] classify(Bitmap bitmap) {
+        Log.d(TAG, "Classify image");
 
         if (!isInitialized) {
             return new String[]{"TF Lite Interpreter is not initialized yet."};
@@ -104,6 +105,7 @@ class MnistClassifier {
         for (int i = 0; i < sorted.size(); i++) {
             int index = resultList.indexOf(sorted.get(i));
             classifiers[i] = index + "";
+            Log.d(TAG, index + ": " + sorted.get(i));
         }
 
         return classifiers;
