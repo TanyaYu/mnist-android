@@ -19,9 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     private DrawView drawView;
     private TextView phoneNumberView;
-    private TextView guess1;
-    private TextView guess2;
-    private TextView guess3;
+    private PromptsView promptsView;
     private Toolbar toolbar;
     private MnistClassifier model;
 
@@ -36,12 +34,11 @@ public class MainActivity extends AppCompatActivity {
 
         formatter = phoneUtil.getAsYouTypeFormatter(getString(R.string.region_code));
         model = new MnistClassifier(this);
+        model.initialize();
 
         phoneNumberView = findViewById(R.id.phone_number_view);
         toolbar = findViewById(R.id.toolbar);
-        guess1 = findViewById(R.id.guess_1);
-        guess2 = findViewById(R.id.guess_2);
-        guess3 = findViewById(R.id.guess_3);
+        promptsView = findViewById(R.id.prompts);
         toolbar = findViewById(R.id.toolbar);
         drawView = findViewById(R.id.draw_view);
 
@@ -51,28 +48,21 @@ public class MainActivity extends AppCompatActivity {
                 classifyDrawing();
             }
         });
-        View.OnClickListener digitListener = new View.OnClickListener() {
+        promptsView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 replaceLastDigit(((TextView) view).getText().toString());
             }
-        };
-        guess1.setOnClickListener(digitListener);
-        guess2.setOnClickListener(digitListener);
-        guess3.setOnClickListener(digitListener);
-        model.initialize();
-
+        });
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_clear:
-                        clear();
-                        return true;
-                    default:
-                        return false;
+                if (item.getItemId() == R.id.action_clear) {
+                    clear();
+                    return true;
                 }
+                return false;
             }
         });
         clear();
@@ -82,9 +72,7 @@ public class MainActivity extends AppCompatActivity {
         Bitmap bitmap = (Bitmap) drawView.createCapture(BITMAP)[0];
         String[] prediction = model.classify(bitmap);
         phoneNumber += prediction[0];
-        guess1.setText(prediction[1]);
-        guess2.setText(prediction[2]);
-        guess3.setText(prediction[3]);
+        promptsView.updatePrompts(prediction);
         updatePhoneNumber();
         drawView.restartDrawing();
     }
@@ -93,9 +81,7 @@ public class MainActivity extends AppCompatActivity {
         phoneNumber = "";
         updatePhoneNumber();
         phoneNumberView.setText(R.string.phone_number_stub);
-        guess1.setText("");
-        guess2.setText("");
-        guess3.setText("");
+        promptsView.updatePrompts(new String[0]);
     }
 
     private void replaceLastDigit(String newDigit) {
