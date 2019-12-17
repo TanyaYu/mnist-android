@@ -77,7 +77,7 @@ class MnistClassifier {
         Log.d(TAG, "Classify image");
 
         if (!isInitialized) {
-            return new String[]{"TF Lite Interpreter is not initialized yet."};
+            throw new RuntimeException("TF Lite Interpreter is not initialized yet.");
         }
 
         Bitmap resizedImage = Bitmap.createScaledBitmap(

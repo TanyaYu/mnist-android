@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private MnistClassifier model;
 
     private PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-    private AsYouTypeFormatter formatter = phoneUtil.getAsYouTypeFormatter("US");
+    private AsYouTypeFormatter formatter;
     private String phoneNumber = "";
 
     @Override
@@ -35,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        formatter = phoneUtil.getAsYouTypeFormatter(getString(R.string.region_code));
         model = new MnistClassifier(this);
 
         phoneNumberView = findViewById(R.id.phone_number_view);
@@ -71,8 +71,6 @@ public class MainActivity extends AppCompatActivity {
                         clear();
                         return true;
                     default:
-                        // If we got here, the user's action was not recognized.
-                        // Invoke the superclass to handle it.
                         return false;
                 }
             }
@@ -94,15 +92,10 @@ public class MainActivity extends AppCompatActivity {
     private void clear() {
         phoneNumber = "";
         updatePhoneNumber();
-        phoneNumberView.setText("Draw a digit");
+        phoneNumberView.setText(R.string.phone_number_stub);
         guess1.setText("");
         guess2.setText("");
         guess3.setText("");
-    }
-
-    private void onBackSpaceClick() {
-        phoneNumber = phoneNumber.substring(0, phoneNumber.length() - 1);
-        updatePhoneNumber();
     }
 
     private void replaceLastDigit(String newDigit) {

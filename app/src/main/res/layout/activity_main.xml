@@ -12,24 +12,21 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:elevation="4dp"
+        android:elevation="@dimen/toolbar_elevation"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:title="Phone Number Dialer"
+        app:title="@string/toolbar_title"
         app:titleTextColor="@android:color/white" />
 
     <TextView
         android:id="@+id/phone_number_view"
+        style="@style/PhoneNumberView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:padding="16dp"
-        android:singleLine="true"
-        android:textColor="#212121"
-        android:textSize="44sp"
         app:layout_constraintBottom_toTopOf="@id/guess_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,7 +38,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/stroked_background"
-        android:elevation="4dp"
+        android:elevation="@dimen/drawing_pad_elevation"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@id/draw_view"
         app:layout_constraintEnd_toEndOf="parent"
@@ -58,7 +55,7 @@
         <View
             android:layout_width="1px"
             android:layout_height="match_parent"
-            android:background="#828282" />
+            android:background="@color/border" />
 
         <TextView
             android:id="@+id/guess_2"
@@ -71,7 +68,7 @@
         <View
             android:layout_width="1px"
             android:layout_height="match_parent"
-            android:background="#828282" />
+            android:background="@color/border" />
 
         <TextView
             android:id="@+id/guess_3"
@@ -86,7 +83,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/stroked_background"
-        android:elevation="4dp"
+        android:elevation="@dimen/drawing_pad_elevation"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
@@ -98,7 +95,7 @@
         android:layout_height="0dp"
         android:layout_margin="1px"
         android:background="@android:color/white"
-        android:elevation="4dp"
+        android:elevation="@dimen/drawing_pad_elevation"
         app:dv_draw_alpha="255"
         app:dv_draw_anti_alias="true"
         app:dv_draw_color="@android:color/black"

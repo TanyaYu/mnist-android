@@ -3,4 +3,8 @@
     <string name="prediction_dialog_title">Your number is</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="action_clear">Clear</string>
+    <string name="phone_number_stub">Draw a digit</string>
+    <string name="region_code">US</string>
+    <string name="toolbar_title">Phone Number Dialer</string>
 </resources>
